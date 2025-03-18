@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Box sx={{ display: "flex" }}>
+        <Box>
           {/* Top Navigation */}
           <AppBar position="fixed">
             <Toolbar>
