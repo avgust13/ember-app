@@ -9,6 +9,7 @@ import {
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Box,
   IconButton,
@@ -82,7 +83,8 @@ const AddressList: FC<AddressListProps> = ({ onSelect }) => {
     if (addressToDelete) {
       deleteAddress({ id1: addressToDelete.id })
         .then(reexecuteQuery)
-        .catch((error) => {
+        .catch(() => {
+          // .catch((error) => {
           // console.error("Error deleting address:", error);
           console.error("Error deleting address");
         });
@@ -128,9 +130,8 @@ const AddressList: FC<AddressListProps> = ({ onSelect }) => {
         {data && (
           <List>
             {data.addresses.map((address: AddressType) => (
-              <ListItem
+              <ListItemButton
                 key={address.id}
-                button="true"
                 onClick={() => handleSelect(address)}
                 selected={selectedAddress?.id === address.id}
               >
@@ -145,7 +146,7 @@ const AddressList: FC<AddressListProps> = ({ onSelect }) => {
                 >
                   <DeleteIcon />
                 </IconButton>
-              </ListItem>
+              </ListItemButton>
             ))}
           </List>
         )}
