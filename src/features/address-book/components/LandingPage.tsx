@@ -34,7 +34,7 @@ const LandingPage: FC = () => {
             flexGrow: 1,
             p: 3,
             mt: "64px", // margin top to account for the AppBar
-            ml: "400px", // margin left to account for the Drawer
+            ml: "100px", // margin left to account for the Drawer
           }}
         >
           {selectedAddress ? (
