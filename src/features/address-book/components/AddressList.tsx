@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { type FC, useState } from "react";
+import { type FC, useCallback, useState } from "react";
 import { gql, useMutation, useQuery } from "urql";
 
 import {
@@ -9,17 +9,14 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemButton,
-  ListItemText,
   Box,
-  IconButton,
   Skeleton,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 import ConfirmDialog from "@components/ConfirmDialog";
 
 import type { AddressType } from "../types";
+import AddressListItem from "./AddressListItem";
 
 const AddressesQuery = gql`
   query {
@@ -59,33 +56,33 @@ const AddressList: FC<AddressListProps> = ({ onSelect }) => {
 
   const [, deleteAddress] = useMutation(DeleteAddressMutation);
 
-  // Handle address selection from the sidebar.
-  const handleSelect = (address: AddressType) => {
-    setSelectedAddress(address);
-    onSelect?.(address);
-  };
+  const handleSelect = useCallback(
+    (address: AddressType) => {
+      setSelectedAddress(address);
+      onSelect?.(address);
+    },
+    [onSelect]
+  );
 
-  // Open delete confirmation dialog.
-  const handleDeleteClick = (address: AddressType, event: React.MouseEvent) => {
-    event.stopPropagation();
-    setAddressToDelete(address);
-    setOpenDialog(true);
-  };
+  const handleDeleteClick = useCallback(
+    (address: AddressType, event: React.MouseEvent) => {
+      event.stopPropagation();
+      setAddressToDelete(address);
+      setOpenDialog(true);
+    },
+    []
+  );
 
-  // Cancel deletion.
-  const cancelDelete = () => {
+  const cancelDelete = useCallback(() => {
     setOpenDialog(false);
     setAddressToDelete(null);
-  };
+  }, []);
 
-  // Confirm deletion.
-  const confirmDelete = () => {
+  const confirmDelete = useCallback(() => {
     if (addressToDelete) {
       deleteAddress({ id: addressToDelete.id })
         .then(reexecuteQuery)
         .catch(() => {
-          // .catch((error) => {
-          // console.error("Error deleting address:", error);
           console.error("Error deleting address");
         });
 
@@ -96,7 +93,13 @@ const AddressList: FC<AddressListProps> = ({ onSelect }) => {
     }
     setOpenDialog(false);
     setAddressToDelete(null);
-  };
+  }, [
+    addressToDelete,
+    deleteAddress,
+    reexecuteQuery,
+    onSelect,
+    selectedAddress,
+  ]);
 
   return (
     <>
@@ -130,23 +133,13 @@ const AddressList: FC<AddressListProps> = ({ onSelect }) => {
         {data && (
           <List>
             {data.addresses.map((address: AddressType) => (
-              <ListItemButton
+              <AddressListItem
                 key={address.id}
-                onClick={() => handleSelect(address)}
-                selected={selectedAddress?.id === address.id}
-              >
-                <ListItemText
-                  primary={address.address}
-                  secondary={address.country}
-                />
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={(e) => handleDeleteClick(address, e)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemButton>
+                address={address}
+                isSelected={selectedAddress?.id === address.id}
+                onSelect={handleSelect}
+                onDeleteClick={handleDeleteClick}
+              />
             ))}
           </List>
         )}
