@@ -81,7 +81,7 @@ const AddressList: FC<AddressListProps> = ({ onSelect }) => {
   // Confirm deletion.
   const confirmDelete = () => {
     if (addressToDelete) {
-      deleteAddress({ id1: addressToDelete.id })
+      deleteAddress({ id: addressToDelete.id })
         .then(reexecuteQuery)
         .catch(() => {
           // .catch((error) => {
